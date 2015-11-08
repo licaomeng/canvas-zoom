@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <meta name="viewport" id="viewport_map"
+          content="user-scalable=yes, initial-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <link href="css/fonts.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+    <script src="scripts/mapinfo.js"></script>
+    <script src="scripts/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+    <div class="map-init" style="position: absolute; z-index: 10; bottom: 127px; right: auto; top: auto; left: 16px;">
+        <div style="font-size: 11px; line-height: 18px;">
+            <div class="init-btn" id="initState" ontouchstart="return true;">
+                <b class="icon-location">
+                </b>
+            </div>
+        </div>
+    </div>
+    <div id="zoom-btn-container" style="position: absolute; z-index: 10; bottom: 127px; right: 16px; top: auto; left: auto;">
+        <div id="zin-btn" class="zoom-btn zoom-btn-in" ontouchstart="return true;">
+            <b class="zin icon-plus">
+            </b>
+        </div>
+        <div id="zout-btn" class="zoom-btn" ontouchstart="return true;">
+            <b class="zout icon-minus">
+            </b>
+        </div>
+    </div>
+    <div style="position:absolute; top:50%;left:50%;transform:translate(-50%,-50%);">
+        <canvas id="indoormap" width="1080" height="1175">[Your browser is too old!]</canvas>
+    </div>
+
+    <script src="scripts/index.js"></script>
+    <script type="text/javascript">
+        var clientWidth = document.documentElement.clientWidth;
+        var clientHeight = document.documentElement.clientHeight;
+
+        var zoomScale = 1;
+        if (clientWidth <= clientHeight) {
+            zoomScale = clientWidth / 720;
+        } else {
+            zoomScale = clientHeight / 720;
+        }
+        function DrawMapInfo(scaleX, scaleY, offsetX, offsetY) {
+            for (i = 0; i < MAPINFO.length; i++) {
+                DrawBlock(MAPINFO[i].x * scaleX + offsetX, MAPINFO[i].y * scaleY + offsetY, MAPINFO[i].width * scaleX, MAPINFO[i].height * scaleY, MAPINFO[i].title, MAPINFO[i].color, MAPINFO[i].textcolor, MAPINFO[i].bordercolor, MAPINFO[i].imageurl);
+            }
+        }
+        function DrawBlock(x, y, width, height, text, backgroudcolor, textcolor, bordercolor, imageurl) {
+            var canvas = document.getElementById("indoormap");
+            var context2D = canvas.getContext("2d");
+            var textsize = width * height / (1000 * zoomScale * zoomScale);
+            context2D.fillStyle = backgroudcolor;
+            context2D.fillRect(x, y, width, height);
+            context2D.strokeStyle = bordercolor;
+            context2D.lineWidth = 0.8;
+            context2D.strokeRect(x, y, width, height);
+            context2D.fillStyle = textcolor;
+            if (textsize > 15) {
+                context2D.font = 20 * zoomScale + "pt Microsoft YaHei";
+                if (imageurl != "") {
+                    var image = new Image();
+                    image.src = imageurl;
+                    context2D.drawImage(image, x + width / 7, y + height / 2 - 25 * zoomScale, 30 * zoomScale, 30 * zoomScale);
+                }
+            } else {
+                context2D.font = 0 + "pt Microsoft YaHei";
+            }
+            context2D.fillText(text, x + width / 7 + 40 * zoomScale, y + height / 2);
+        }
+    </script>
+    <script src="scripts/canvas-zoom.js"></script>
+    <script>
+        var gesturableCanvas = new CanvasZoom({
+            canvas: document.getElementById('indoormap'),
+            desktop: true
+        });
+        function refreshFunc() {
+            if (gesturableCanvas.scale.x > 2.4) {
+                $("#zin-btn").addClass("blue-disable");
+            }
+            if (gesturableCanvas.scale.x < 2.4) {
+                $("#zin-btn").removeClass("blue-disable");
+            }
+            if (gesturableCanvas.scale.x == 1) {
+                $("#zout-btn").addClass("blue-disable");
+            }
+            if (gesturableCanvas.scale.x > 1) {
+                $("#zout-btn").removeClass("blue-disable");
+            }
+        }
+        $(document).ready(function () {
+            setInterval(refreshFunc, 100);
+        });
+
+        var clientWidth = document.documentElement.clientWidth;
+        var clientHeight = document.documentElement.clientHeight;
+
+        var zoomScale = 1;
+        if (clientWidth <= clientHeight) {
+            zoomScale = clientWidth / 720;
+        } else {
+            zoomScale = clientHeight / 720;
+        }
+
+        var zoomBtnWidth = $(".zoom-btn").width() * zoomScale;
+        var zoomBtnHeight = $(".zoom-btn").height() * zoomScale;
+        var zinFontSize = parseInt($(".zin").css('font-size').substr(0, $(".zin").css('font-size').length - 2)) * zoomScale;
+        var zoutFontSize = parseInt($(".zout").css('font-size').substr(0, $(".zout").css('font-size').length - 2)) * zoomScale;
+        var initBtnWidth = $(".init-btn").width() * zoomScale;
+        var initBtnHeight = $(".init-btn").height() * zoomScale;
+        var initFontSize = parseInt($(".map-init .init-btn b").css('font-size').substr(0, $(".map-init .init-btn b").css('font-size').length - 2)) * zoomScale;
+
+        $(".zoom-btn").width(zoomBtnWidth);
+        $(".zoom-btn").height(zoomBtnHeight);
+        $(".zin").css('font-size', zinFontSize);
+        $(".zout").css('font-size', zoutFontSize);
+        $(".init-btn").width(initBtnWidth);
+        $(".init-btn").height(initBtnHeight);
+        $(".map-init .init-btn b").css('font-size', initFontSize);
+
+        $(function () {
+            $("#zin-btn").click(function () {
+                var clientWidth = document.documentElement.clientWidth;
+                var clientHeight = document.documentElement.clientHeight;
+                var counter = 0;
+                a();
+                function a() {
+                    if (gesturableCanvas.scale.x < 2.5) {
+                        gesturableCanvas.scale.x += 0.05;
+                        gesturableCanvas.scale.y += 0.05;
+                        gesturableCanvas.position.x += -(clientWidth / 60);
+                        gesturableCanvas.position.y += -(clientHeight / 60);
+                        counter++;
+                        if (counter < 10) {
+                            setTimeout(a, 0.001);
+                        }
+                    } else {
+                        gesturableCanvas.scale.x = 2.5;
+                        gesturableCanvas.scale.y = 2.5;
+                        gesturableCanvas.position.x = -(clientWidth / 2);
+                        gesturableCanvas.position.y = -(clientHeight / 2);
+                    }
+                }
+            });
+
+            $("#zout-btn").click(function () {
+                var clientWidth = document.documentElement.clientWidth;
+                var clientHeight = document.documentElement.clientHeight;
+                var counter = 0;
+                a();
+                function a() {
+                    if (gesturableCanvas.scale.x > 1) {
+                        gesturableCanvas.scale.x -= 0.05;
+                        gesturableCanvas.scale.y -= 0.05;
+                        gesturableCanvas.position.x -= -(clientWidth / 60);
+                        gesturableCanvas.position.y -= -(clientHeight / 60);
+                        counter++;
+                        if (counter < 10) {
+                            setTimeout(a, 0.001);
+                        }
+                    } else {
+                        gesturableCanvas.scale.x = 1;
+                        gesturableCanvas.scale.y = 1;
+                        gesturableCanvas.position.x = 0;
+                        gesturableCanvas.position.y = 0;
+                    }
+                }
+            });
+
+            $("#initState").click(function () {
+                var clientWidth = document.documentElement.clientWidth;
+                var clientHeight = document.documentElement.clientHeight;
+                a();
+                function a() {
+                    if (gesturableCanvas.scale.x > 1) {
+                        gesturableCanvas.scale.x -= 0.25;
+                        gesturableCanvas.scale.y -= 0.25;
+                        gesturableCanvas.position.x -= -(clientWidth / 12);
+                        gesturableCanvas.position.y -= -(clientHeight / 12);
+                        setTimeout(a, 0.001);
+                    } else {
+                        gesturableCanvas.scale.x = 1;
+                        gesturableCanvas.scale.y = 1;
+                        gesturableCanvas.position.x = 0;
+                        gesturableCanvas.position.y = 0;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

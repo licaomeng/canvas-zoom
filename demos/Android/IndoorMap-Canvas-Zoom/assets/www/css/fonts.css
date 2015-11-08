@@ -1,0 +1,33 @@
+@font-face {
+    font-family: 'mwa';
+    src: url('../fonts/mwa.eot') format('embedded-opentype'), /* IE6-IE8 */
+    url('../fonts/mwa.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('../fonts/mwa.woff') format('woff'); /* Modern Browsers */
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    font-family: 'mwa';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-plus:before {
+    content: "\e60d";
+}
+
+.icon-minus:before {
+    content: "\e60f";
+}
+
+.icon-location:before {
+    content: "\e614";
+}
