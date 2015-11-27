@@ -3,6 +3,7 @@ An indoor map sample based on HTML5 canvas, you can zoom in and zoom out the map
 
 #Demo gif
 ![](https://github.com/licaomeng/canvas-zoom/blob/master/demo1.gif)
+
 ![](https://github.com/licaomeng/canvas-zoom/blob/master/demo2.gif)
 
 #Usage
